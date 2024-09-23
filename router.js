@@ -4,6 +4,7 @@ const router = express.Router();
 const mongoose = require('mongoose');
 
 
+
 const Genero = require('../Genero');
 const Director = require('../Director');
 const Productora = require('../Productora');
@@ -241,8 +242,7 @@ router.delete('/Tipo/:id', async (req, res) => {
 // Rutas para el módulo Media (Películas y Series)
 router.get('/Media', async (req, res) => {
   try {
-    const medias = await Media.find()
-      .populate('tipo productora director genero'); // Poblar referencias
+    const medias = await Media.find().populate('tipo productora director genero'); // Poblar referencias
     res.send(medias);
   } catch (error) {
     res.status(500).send('Error al obtener medios');
@@ -252,10 +252,10 @@ router.get('/Media', async (req, res) => {
 // Crear un nuevo medio
 router.post('/Media', [
   check('titulo', 'El título es obligatorio').not().isEmpty(),
-  check('tipo', 'El tipo debe ser un ObjectId válido').custom(value => mongoose.Types.ObjectId.isValid(value)),
-  check('productora', 'La productora debe ser un ObjectId válido').custom(value => mongoose.Types.ObjectId.isValid(value)),
-  check('director', 'El director debe ser un ObjectId válido').custom(value => mongoose.Types.ObjectId.isValid(value)),
-  check('genero', 'El género debe ser un ObjectId válido').custom(value => mongoose.Types.ObjectId.isValid(value)),
+  check('tipo', 'El tipo es opcional y puede ser cualquier valor').optional(),
+  check('productora', 'La productora es opcional y puede ser cualquier valor').optional(),
+  check('director', 'El director es opcional y puede ser cualquier valor').optional(),
+  check('genero', 'El género es opcional y puede ser cualquier valor').optional(),
   check('url', 'La URL es obligatoria').not().isEmpty(),
   check('sinopsis', 'La sinopsis es obligatoria').not().isEmpty(),
   check('serial', 'El campo serial es obligatorio y debe ser un número').isNumeric(),
@@ -264,21 +264,22 @@ router.post('/Media', [
   check('estado', 'El estado es obligatorio').not().isEmpty(),
 ], handleValidationErrors, async (req, res) => {
   const { titulo, tipo, productora, director, genero, url, sinopsis, serial, fechaCreacion, fechaActualizacion, estado } = req.body;
-  
+
   try {
     const newMedia = new Media({
       titulo,
-      tipo: mongoose.Types.ObjectId(tipo),
-      productora: mongoose.Types.ObjectId(productora),
-      director: mongoose.Types.ObjectId(director),
-      genero: mongoose.Types.ObjectId(genero),
+      tipo: tipo || null,  // Permitir cualquier valor
+      productora: productora || null,  // Permitir cualquier valor
+      director: director || null,  // Permitir cualquier valor
+      genero: genero || null,  // Permitir cualquier valor
       url,
       sinopsis,
-      serial,
+      serial: Number(serial),
       fechaCreacion,
       fechaActualizacion,
       estado
     });
+
     await newMedia.save();
     res.status(201).send('Media creado exitosamente');
   } catch (error) {
@@ -286,13 +287,14 @@ router.post('/Media', [
   }
 });
 
+
 // Actualizar un medio existente
 router.put('/Media/:id', [
   check('titulo', 'El título es obligatorio').not().isEmpty(),
-  check('tipo', 'El tipo debe ser un ObjectId válido').custom(value => mongoose.Types.ObjectId.isValid(value)),
-  check('productora', 'La productora debe ser un ObjectId válido').custom(value => mongoose.Types.ObjectId.isValid(value)),
-  check('director', 'El director debe ser un ObjectId válido').custom(value => mongoose.Types.ObjectId.isValid(value)),
-  check('genero', 'El género debe ser un ObjectId válido').custom(value => mongoose.Types.ObjectId.isValid(value)),
+  check('tipo', 'El tipo debe ser un ObjectId válido').isMongoId(),
+  check('productora', 'La productora debe ser un ObjectId válido').isMongoId(),
+  check('director', 'El director debe ser un ObjectId válido').isMongoId(),
+  check('genero', 'El género debe ser un ObjectId válido').isMongoId(),
   check('url', 'La URL es obligatoria').not().isEmpty(),
   check('sinopsis', 'La sinopsis es obligatoria').not().isEmpty(),
   check('serial', 'El campo serial es obligatorio y debe ser un número').isNumeric(),
@@ -302,46 +304,32 @@ router.put('/Media/:id', [
 ], handleValidationErrors, async (req, res) => {
   const { id } = req.params;
   const { titulo, tipo, productora, director, genero, url, sinopsis, serial, fechaCreacion, fechaActualizacion, estado } = req.body;
-  
+
   try {
     const updatedMedia = await Media.findByIdAndUpdate(
       id,
       {
         titulo,
-        tipo: mongoose.Types.ObjectId(tipo),
-        productora: mongoose.Types.ObjectId(productora),
-        director: mongoose.Types.ObjectId(director),
-        genero: mongoose.Types.ObjectId(genero),
+        tipo,  // Usa directamente el valor
+        productora,  // Usa directamente el valor
+        director,  // Usa directamente el valor
+        genero,  // Usa directamente el valor
         url,
         sinopsis,
-        serial,
+        serial: Number(serial),
         fechaCreacion,
         fechaActualizacion,
         estado
       },
-      { new: true }
+      { new: true }  // Devuelve el documento actualizado
     );
+
     if (!updatedMedia) {
-      return res.status(404).send('Media no encontrada');
+      return res.status(404).send('Media no encontrado');
     }
     res.send(updatedMedia);
   } catch (error) {
     res.status(500).send(`Error al actualizar Media: ${error.message}`);
-  }
-});
-
-// Eliminar un medio existente
-router.delete('/Media/:id', async (req, res) => {
-  const { id } = req.params;
-  
-  try {
-    const result = await Media.findByIdAndDelete(id);
-    if (!result) {
-      return res.status(404).send('Media no encontrada');
-    }
-    res.send('Media eliminada');
-  } catch (error) {
-    res.status(500).send(`Error al eliminar Media: ${error.message}`);
   }
 });
 module.exports = router;
