@@ -1,0 +1,54 @@
+.lista-generos-container {
+    width: 80%;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0; /* Fondo suave para contraste */
+    border-radius: 8px; /* Bordes redondeados para suavidad */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Sombra para profundidad */
+}
+
+h2 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 20px; /* Espaciado inferior para separar del contenido */
+}
+
+.genero-list {
+    list-style-type: none;
+    padding: 0;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.genero-item {
+    background-color: #ffffff; /* Color de fondo blanco para los elementos */
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.2s; /* Efecto de transición suave */
+}
+
+.genero-item:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Sombra al pasar el ratón */
+}
+
+.genero-item strong {
+    display: block;
+    margin-bottom: 5px;
+    color: #555; /* Color más suave para el texto */
+}
+
+.error-message {
+    color: red; /* Color rojo para mensajes de error */
+    text-align: center;
+    margin-top: 10px;
+}
+
+.success-message {
+    color: green; /* Color verde para mensajes de éxito */
+    text-align: center;
+    margin-top: 10px;
+}

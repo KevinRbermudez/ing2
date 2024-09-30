@@ -1,24 +1,21 @@
-const express = require('express');
-const cors = require('cors');
-const { getConnection } = require('./db/db-connect-mongo');
-const router = require('./modelos/router/router'); // Ruta correcta para el archivo del router
-const bodyParser = require('body-parser');
+// src/index.js
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import { BrowserRouter } from 'react-router-dom'; // Importa BrowserRouter
+import './index.css'; // Asegúrate de que este archivo exista
+import App from './App';
+import reportWebVitals from './reportWebVitals';
 
-const app = express();
-const port = process.env.PORT || 3000;
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(
+  <React.StrictMode>
+    <BrowserRouter> {/* Envuelve tu App con BrowserRouter */}
+      <App />
+    </BrowserRouter>
+  </React.StrictMode>
+);
 
-app.use(bodyParser.json());
-app.use(cors());
-app.use(express.json()); // Middleware para parsear JSON
-app.use('/router', router); // Utiliza el router importado
-
-getConnection(); // Conectar a la base de datos
-
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).send('Algo salió mal');
-});
-
-app.listen(port, () => {
-  console.log(`App listening on port ${port}`);
-});
+// Si deseas comenzar a medir el rendimiento en tu aplicación, pasa una función
+// para registrar resultados (por ejemplo: reportWebVitals(console.log))
+// o envía a un punto de análisis. Aprende más: https://bit.ly/CRA-vitals
+reportWebVitals();
